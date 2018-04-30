@@ -1,7 +1,7 @@
 package org.nnsoft.trudeau.visit;
 
 /*
- *   Copyright 2013 The Trudeau Project
+ *   Copyright 2013 - 2018 The Trudeau Project
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -18,16 +18,16 @@ package org.nnsoft.trudeau.visit;
 
 import static org.nnsoft.trudeau.visit.VisitState.CONTINUE;
 
-import org.nnsoft.trudeau.api.Graph;
+import com.google.common.graph.Graph;
 
 /**
  * Base NOOP {@link GraphVisitHandler} implementation.
  *
- * @param <V> the Graph vertices type
+ * @param <N> the Graph vertices type
  * @param <E> the Graph edges type
  */
-public class BaseGraphVisitHandler<V, E, G extends Graph<V, E>, O>
-    implements GraphVisitHandler<V, E, G, O>
+public class BaseGraphVisitHandler<N, G extends Graph<N>, O>
+    implements GraphVisitHandler<N, G, O>
 {
 
     /**
@@ -41,7 +41,7 @@ public class BaseGraphVisitHandler<V, E, G extends Graph<V, E>, O>
     /**
      * {@inheritDoc}
      */
-    public VisitState discoverVertex( V vertex )
+    public VisitState discoverNode( N vertex )
     {
         // do nothing
         return CONTINUE;
@@ -50,7 +50,7 @@ public class BaseGraphVisitHandler<V, E, G extends Graph<V, E>, O>
     /**
      * {@inheritDoc}
      */
-    public VisitState discoverEdge( V head, E edge, V tail )
+    public VisitState discoverEdge( N head, N tail )
     {
         // do nothing
         return CONTINUE;
@@ -59,16 +59,7 @@ public class BaseGraphVisitHandler<V, E, G extends Graph<V, E>, O>
     /**
      * {@inheritDoc}
      */
-    public VisitState finishEdge( V head, E edge, V tail )
-    {
-        // do nothing
-        return CONTINUE;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public VisitState finishVertex( V vertex )
+    public VisitState finishVertex( N vertex )
     {
         // do nothing
         return CONTINUE;

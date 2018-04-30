@@ -1,7 +1,7 @@
 package org.nnsoft.trudeau.visit;
 
 /*
- *   Copyright 2013 The Trudeau Project
+ *   Copyright 2013 - 2018 The Trudeau Project
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@ package org.nnsoft.trudeau.visit;
  *   limitations under the License.
  */
 
-import static org.nnsoft.trudeau.utils.Assertions.checkNotNull;
-import static org.nnsoft.trudeau.utils.Assertions.checkState;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
-import org.nnsoft.trudeau.api.Graph;
+import com.google.common.graph.Graph;
 
 /**
  * {@link VisitSourceSelector} implementation.
@@ -28,8 +28,8 @@ import org.nnsoft.trudeau.api.Graph;
  * @param <E> the Graph edges type
  * @param <G> the Graph type
  */
-final class DefaultVisitSourceSelector<V, E, G extends Graph<V, E>>
-    implements VisitSourceSelector<V, E, G>
+final class DefaultVisitSourceSelector<V, G extends Graph<V>>
+    implements VisitSourceSelector<V, G>
 {
 
     private final G graph;
@@ -42,11 +42,11 @@ final class DefaultVisitSourceSelector<V, E, G extends Graph<V, E>>
     /**
      * {@inheritDoc}
      */
-    public <S extends V> VisitAlgorithmsSelector<V, E, G> from( S source )
+    public <S extends V> VisitAlgorithmsSelector<V, G> from( S source )
     {
         source = checkNotNull( source, "Impossible to visit input graph %s with null source", graph );
-        checkState( graph.containsVertex( source ), "Vertex %s does not exist in the Graph", source );
-        return new DefaultVisitAlgorithmsSelector<V, E, G>( graph, source );
+        checkState( graph.nodes().contains( source ), "Vertex %s does not exist in the Graph", source );
+        return new DefaultVisitAlgorithmsSelector<V, G>( graph, source );
     }
 
 }

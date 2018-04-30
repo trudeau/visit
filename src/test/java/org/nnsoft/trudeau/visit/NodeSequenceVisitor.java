@@ -1,7 +1,7 @@
 package org.nnsoft.trudeau.visit;
 
 /*
- *   Copyright 2013 The Trudeau Project
+ *   Copyright 2013 - 2018 The Trudeau Project
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -21,23 +21,21 @@ import static java.util.Collections.unmodifiableList;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nnsoft.trudeau.inmemory.UndirectedMutableGraph;
-import org.nnsoft.trudeau.inmemory.labeled.BaseLabeledEdge;
-import org.nnsoft.trudeau.inmemory.labeled.BaseLabeledVertex;
+import com.google.common.graph.Graph;
 
 public final class NodeSequenceVisitor
-    extends BaseGraphVisitHandler<BaseLabeledVertex, BaseLabeledEdge, UndirectedMutableGraph<BaseLabeledVertex, BaseLabeledEdge>, List<BaseLabeledVertex>>
+    extends BaseGraphVisitHandler<String, Graph<String>, List<String>>
 {
 
-    private final List<BaseLabeledVertex> vertices = new ArrayList<BaseLabeledVertex>();
+    private final List<String> nodes = new ArrayList<String>();
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public VisitState discoverVertex( BaseLabeledVertex vertex )
+    public VisitState discoverNode( String vertex )
     {
-        vertices.add( vertex );
+        nodes.add( vertex );
         return VisitState.CONTINUE;
     }
 
@@ -45,9 +43,9 @@ public final class NodeSequenceVisitor
      * {@inheritDoc}
      */
     @Override
-    public List<BaseLabeledVertex> onCompleted()
+    public List<String> onCompleted()
     {
-        return unmodifiableList( vertices );
+        return unmodifiableList( nodes );
     }
 
 }

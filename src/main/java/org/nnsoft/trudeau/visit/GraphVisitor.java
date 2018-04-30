@@ -1,7 +1,7 @@
 package org.nnsoft.trudeau.visit;
 
 /*
- *   Copyright 2013 The Trudeau Project
+ *   Copyright 2013 - 2018 The Trudeau Project
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@ package org.nnsoft.trudeau.visit;
  *   limitations under the License.
  */
 
-import static org.nnsoft.trudeau.utils.Assertions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import org.nnsoft.trudeau.api.Graph;
+import com.google.common.graph.Graph;
 
 public final class GraphVisitor
 {
@@ -26,16 +26,16 @@ public final class GraphVisitor
     /**
      * Allows select a series of algorithms to apply on input graph.
      *
-     * @param <V> the Graph vertices type
+     * @param <N> the Graph nodes type
      * @param <E> the Graph edges type
      * @param <G> the Graph type
      * @param graph the Graph instance to apply graph algorithms
      * @return the graph algorithms selector
      */
-    public static <V, E, G extends Graph<V, E>> VisitSourceSelector<V, E, G> visit( G graph )
+    public static <N, G extends Graph<N>> VisitSourceSelector<N, G> visit( G graph )
     {
         graph = checkNotNull( graph, "No algorithm can be applied on null graph!" );
-        return new DefaultVisitSourceSelector<V, E, G>( graph );
+        return new DefaultVisitSourceSelector<N, G>( graph );
     }
 
     private GraphVisitor()

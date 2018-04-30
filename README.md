@@ -16,7 +16,7 @@ import org.nnsoft.trudeau.api.Graph;
 
 …
 
-Graph<V, E> g; // it can be whatever kind of Graph
+Graph<V> g; // it can be whatever kind of Graph
 V source; // the source node where the visit algorithm has to start
 
 Graph<BaseLabeledVertex, BaseLabeledEdge> graphVisit =
@@ -33,7 +33,7 @@ import org.nnsoft.trudeau.api.Graph;
 
 …
 
-Graph<V, E> g; // it can be whatever kind of Graph
+Graph<V> g; // it can be whatever kind of Graph
 V source; // the source node where the visit algorithm has to start
 
 Graph<BaseLabeledVertex, BaseLabeledEdge> graphVisit =

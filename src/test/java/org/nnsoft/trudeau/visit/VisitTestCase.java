@@ -1,7 +1,7 @@
 package org.nnsoft.trudeau.visit;
 
 /*
- *   Copyright 2013 The Trudeau Project
+ *   Copyright 2013 - 2018 The Trudeau Project
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -17,18 +17,21 @@ package org.nnsoft.trudeau.visit;
  */
 
 import static org.junit.Assert.assertEquals;
-import static org.nnsoft.trudeau.connector.GraphPopulator.populate;
+import static org.nnsoft.trudeau.connector.GraphConnector.populate;
 import static org.nnsoft.trudeau.visit.GraphVisitor.visit;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.nnsoft.trudeau.api.Graph;
-import org.nnsoft.trudeau.connector.AbstractGraphConnection;
-import org.nnsoft.trudeau.inmemory.UndirectedMutableGraph;
-import org.nnsoft.trudeau.inmemory.labeled.BaseLabeledEdge;
-import org.nnsoft.trudeau.inmemory.labeled.BaseLabeledVertex;
+import org.nnsoft.trudeau.connector.AbstractMutableGraphConnection;
+import org.nnsoft.trudeau.connector.AbstractMutableValueGraphConnection;
+
+import com.google.common.graph.Graph;
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
+import com.google.common.graph.MutableValueGraph;
+import com.google.common.graph.ValueGraphBuilder;
 
 public final class VisitTestCase
 {
@@ -36,10 +39,9 @@ public final class VisitTestCase
     @Test( expected = IllegalStateException.class )
     public void testNotExistVertex()
     {
-        UndirectedMutableGraph<BaseLabeledVertex, BaseLabeledEdge> input =
-                        new UndirectedMutableGraph<BaseLabeledVertex, BaseLabeledEdge>();
+        Graph<String> input = GraphBuilder.undirected().build();
 
-        visit( input ).from( new BaseLabeledVertex( "NOT EXIST" ) );
+        visit( input ).from( "DOES NOT EXIST" );
     }
 
     /**
@@ -51,77 +53,77 @@ public final class VisitTestCase
     {
         // input graph
 
-        UndirectedMutableGraph<BaseLabeledVertex, BaseLabeledEdge> input =
-                        populate( new UndirectedMutableGraph<BaseLabeledVertex, BaseLabeledEdge>() )
-                        .withConnections( new AbstractGraphConnection<BaseLabeledVertex, BaseLabeledEdge>()
+        MutableGraph<String> input = GraphBuilder.undirected().build();
+
+        populate( input ).withConnections( new AbstractMutableGraphConnection<String>()
         {
 
             @Override
             public void connect()
             {
-                BaseLabeledVertex r = addVertex( new BaseLabeledVertex( "r" ) );
-                BaseLabeledVertex s = addVertex( new BaseLabeledVertex( "s" ) );
-                BaseLabeledVertex t = addVertex( new BaseLabeledVertex( "t" ) );
-                BaseLabeledVertex u = addVertex( new BaseLabeledVertex( "u" ) );
-                BaseLabeledVertex v = addVertex( new BaseLabeledVertex( "v" ) );
-                BaseLabeledVertex w = addVertex( new BaseLabeledVertex( "w" ) );
-                BaseLabeledVertex x = addVertex( new BaseLabeledVertex( "x" ) );
-                BaseLabeledVertex y = addVertex( new BaseLabeledVertex( "y" ) );
+                String r = addNode( "r" );
+                String s = addNode( "s" );
+                String t = addNode( "t" );
+                String u = addNode( "u" );
+                String v = addNode( "v" );
+                String w = addNode( "w" );
+                String x = addNode( "x" );
+                String y = addNode( "y" );
 
-                addEdge( new BaseLabeledEdge( "s <-> r" ) ).from( s ).to( r );
-                addEdge( new BaseLabeledEdge( "s <-> w" ) ).from( s ).to( w );
+                connect( s ).to( r );
+                connect( s ).to( w );
 
-                addEdge( new BaseLabeledEdge( "r <-> v" ) ).from( r ).to( v );
+                connect( r ).to( v );
 
-                addEdge( new BaseLabeledEdge( "w <-> t" ) ).from( w ).to( t );
-                addEdge( new BaseLabeledEdge( "w <-> x" ) ).from( w ).to( x );
+                connect( w ).to( t );
+                connect( w ).to( x );
 
-                addEdge( new BaseLabeledEdge( "t <-> u" ) ).from( t ).to( u );
-                addEdge( new BaseLabeledEdge( "t <-> x" ) ).from( t ).to( x );
+                connect( t ).to( u );
+                connect( t ).to( x );
 
-                addEdge( new BaseLabeledEdge( "y <-> u" ) ).from( y ).to( u );
-                addEdge( new BaseLabeledEdge( "x <-> y" ) ).from( x ).to( y );
+                connect( y ).to( u );
+                connect( x ).to( y );
             }
 
         } );
 
         // expected graph
 
-        UndirectedMutableGraph<BaseLabeledVertex, BaseLabeledEdge> expected =
-                        populate( new UndirectedMutableGraph<BaseLabeledVertex, BaseLabeledEdge>() )
-                        .withConnections( new AbstractGraphConnection<BaseLabeledVertex, BaseLabeledEdge>()
+        MutableGraph<String> expected = GraphBuilder.undirected().build();
+
+        populate( expected ).withConnections( new AbstractMutableGraphConnection<String>()
         {
 
             @Override
             public void connect()
             {
-                BaseLabeledVertex r = addVertex( new BaseLabeledVertex( "r" ) );
-                BaseLabeledVertex s = addVertex( new BaseLabeledVertex( "s" ) );
-                BaseLabeledVertex t = addVertex( new BaseLabeledVertex( "t" ) );
-                BaseLabeledVertex u = addVertex( new BaseLabeledVertex( "u" ) );
-                BaseLabeledVertex v = addVertex( new BaseLabeledVertex( "v" ) );
-                BaseLabeledVertex w = addVertex( new BaseLabeledVertex( "w" ) );
-                BaseLabeledVertex x = addVertex( new BaseLabeledVertex( "x" ) );
-                BaseLabeledVertex y = addVertex( new BaseLabeledVertex( "y" ) );
+                String r = addNode( "r" );
+                String s = addNode( "s" );
+                String t = addNode( "t" );
+                String u = addNode( "u" );
+                String v = addNode( "v" );
+                String w = addNode( "w" );
+                String x = addNode( "x" );
+                String y = addNode( "y" );
 
-                addEdge( new BaseLabeledEdge( "s <-> r" ) ).from( s ).to( r );
-                addEdge( new BaseLabeledEdge( "s <-> w" ) ).from( s ).to( w );
+                connect( s ).to( r );
+                connect( s ).to( w );
 
-                addEdge( new BaseLabeledEdge( "r <-> v" ) ).from( r ).to( v );
+                connect( r ).to( v );
 
-                addEdge( new BaseLabeledEdge( "w <-> t" ) ).from( w ).to( t );
-                addEdge( new BaseLabeledEdge( "w <-> x" ) ).from( w ).to( x );
+                connect( w ).to( t );
+                connect( w ).to( x );
 
-                addEdge( new BaseLabeledEdge( "t <-> u" ) ).from( t ).to( u );
+                connect( t ).to( u );
 
-                addEdge( new BaseLabeledEdge( "x <-> y" ) ).from( x ).to( y );
+                connect( x ).to( y );
             }
 
         } );
 
         // actual graph
 
-        Graph<BaseLabeledVertex, BaseLabeledEdge> actual = visit( input ).from( new BaseLabeledVertex( "s" ) ).applyingBreadthFirstSearch();
+        Graph<String> actual = visit( input ).from( "s" ).applyingBreadthFirstSearch();
 
         // assertion
 
@@ -136,58 +138,57 @@ public final class VisitTestCase
     public void verifyDepthFirstSearch()
     {
         // expected node set
-        final List<BaseLabeledVertex> expected = new ArrayList<BaseLabeledVertex>();
+        final List<String> expected = new ArrayList<String>();
 
         // input graph
 
-        UndirectedMutableGraph<BaseLabeledVertex, BaseLabeledEdge> input =
-                        populate( new UndirectedMutableGraph<BaseLabeledVertex, BaseLabeledEdge>() )
-                        .withConnections( new AbstractGraphConnection<BaseLabeledVertex, BaseLabeledEdge>()
+        MutableValueGraph<String, String> input = ValueGraphBuilder.undirected().build();
+        populate( input ).withConnections( new AbstractMutableValueGraphConnection<String, String>()
         {
 
             @Override
             public void connect()
             {
-                BaseLabeledVertex a = addVertex( new BaseLabeledVertex( "A" ) );
-                BaseLabeledVertex b = addVertex( new BaseLabeledVertex( "B" ) );
-                BaseLabeledVertex c = addVertex( new BaseLabeledVertex( "C" ) );
-                BaseLabeledVertex d = addVertex( new BaseLabeledVertex( "D" ) );
-                BaseLabeledVertex e = addVertex( new BaseLabeledVertex( "E" ) );
-                BaseLabeledVertex f = addVertex( new BaseLabeledVertex( "F" ) );
-                BaseLabeledVertex g = addVertex( new BaseLabeledVertex( "G" ) );
-                BaseLabeledVertex h = addVertex( new BaseLabeledVertex( "H" ) );
-                BaseLabeledVertex s = addVertex( new BaseLabeledVertex( "S" ) );
+                String a = addNode( "A" );
+                String b = addNode( "B" );
+                String c = addNode( "C" );
+                String d = addNode( "D" );
+                String e = addNode( "E" );
+                String f = addNode( "F" );
+                String g = addNode( "G" );
+                String h = addNode( "H" );
+                String s = addNode( "S" );
 
-                addEdge( new BaseLabeledEdge( "S <-> A" ) ).from( s ).to( a );
-                addEdge( new BaseLabeledEdge( "S <-> B" ) ).from( s ).to( b );
+                putEdgeValue( "S <-> A" ).from( s ).to( a );
+                putEdgeValue( "S <-> B" ).from( s ).to( b );
 
-                addEdge( new BaseLabeledEdge( "A <-> C" ) ).from( a ).to( c );
-                addEdge( new BaseLabeledEdge( "A <-> D" ) ).from( a ).to( d );
+                putEdgeValue( "A <-> C" ).from( a ).to( c );
+                putEdgeValue( "A <-> D" ).from( a ).to( d );
 
-                addEdge( new BaseLabeledEdge( "B <-> E" ) ).from( b ).to( e );
-                addEdge( new BaseLabeledEdge( "B <-> F" ) ).from( b ).to( f );
+                putEdgeValue( "B <-> E" ).from( b ).to( e );
+                putEdgeValue( "B <-> F" ).from( b ).to( f );
 
-                addEdge( new BaseLabeledEdge( "E <-> H" ) ).from( e ).to( h );
-                addEdge( new BaseLabeledEdge( "E <-> G" ) ).from( e ).to( g );
+                putEdgeValue( "E <-> H" ).from( e ).to( h );
+                putEdgeValue( "E <-> G" ).from( e ).to( g );
 
                 // populate the expected list, order is not the same in the pic, due to Stack use
                 expected.add( s );
+                expected.add( a );
+                expected.add( c );
+                expected.add( d );
                 expected.add( b );
                 expected.add( f );
                 expected.add( e );
                 expected.add( g );
                 expected.add( h );
-                expected.add( a );
-                expected.add( d );
-                expected.add( c );
             }
 
         } );
 
         // actual node set
 
-        final List<BaseLabeledVertex> actual =
-            visit( input ).from( new BaseLabeledVertex( "S" ) ).applyingDepthFirstSearch( new NodeSequenceVisitor() );
+        final List<String> actual =
+            visit( input.asGraph() ).from( "S" ).applyingDepthFirstSearch( new NodeSequenceVisitor() );
 
         // assertion
 

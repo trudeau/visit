@@ -1,7 +1,7 @@
 package org.nnsoft.trudeau.visit;
 
 /*
- *   Copyright 2013 The Trudeau Project
+ *   Copyright 2013 - 2018 The Trudeau Project
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,16 +16,16 @@ package org.nnsoft.trudeau.visit;
  *   limitations under the License.
  */
 
-import org.nnsoft.trudeau.api.Graph;
+import com.google.common.graph.Graph;
 
 /**
  * Search root node selector.
  *
- * @param <V> the Graph vertices type
+ * @param <N> the Graph nodes type
  * @param <E> the Graph edges type
  * @param <G> the Graph type
  */
-public interface VisitSourceSelector<V, E, G extends Graph<V, E>>
+public interface VisitSourceSelector<N, G extends Graph<N>>
 {
 
     /**
@@ -34,6 +34,6 @@ public interface VisitSourceSelector<V, E, G extends Graph<V, E>>
      * @param source the root node the search begins from
      * @return the search visit algorithm selector
      */
-    <S extends V> VisitAlgorithmsSelector<V, E, G> from( S source );
+    <S extends N> VisitAlgorithmsSelector<N, G> from( S source );
 
 }

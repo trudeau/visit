@@ -1,7 +1,7 @@
 package org.nnsoft.trudeau.visit;
 
 /*
- *   Copyright 2013 The Trudeau Project
+ *   Copyright 2013 - 2018 The Trudeau Project
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@ package org.nnsoft.trudeau.visit;
  *   limitations under the License.
  */
 
-import static org.nnsoft.trudeau.utils.Assertions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.graph.EndpointPair.ordered;
 import static org.nnsoft.trudeau.visit.VisitState.ABORT;
 import static org.nnsoft.trudeau.visit.VisitState.CONTINUE;
 
@@ -25,26 +26,25 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.nnsoft.trudeau.api.DirectedGraph;
-import org.nnsoft.trudeau.api.Graph;
-import org.nnsoft.trudeau.api.VertexPair;
+import com.google.common.graph.Graph;
+import com.google.common.graph.EndpointPair;
 
 /**
  * {@link VisitAlgorithmsSelector} implementation.
  *
- * @param <V> the Graph vertices type
+ * @param <N> the Graph vertices type
  * @param <E> the Graph edges type
  * @param <G> the Graph type
  */
-final class DefaultVisitAlgorithmsSelector<V, E, G extends Graph<V, E>>
-    implements VisitAlgorithmsSelector<V, E, G>
+final class DefaultVisitAlgorithmsSelector<N, G extends Graph<N>>
+    implements VisitAlgorithmsSelector<N, G>
 {
 
     /** The graph. */
     private final G graph;
 
     /** The start vertex for the search. */
-    private final V source;
+    private final N source;
 
     /**
      * Create a default {@link VisitAlgorithmsSelector} for the given {@link Graph} and start vertex.
@@ -52,7 +52,7 @@ final class DefaultVisitAlgorithmsSelector<V, E, G extends Graph<V, E>>
      * @param graph the {@link Graph} to be used.
      * @param source the start vertex.
      */
-    public DefaultVisitAlgorithmsSelector( final G graph, final V source )
+    public DefaultVisitAlgorithmsSelector( final G graph, final N source )
     {
         this.graph = graph;
         this.source = source;
@@ -61,23 +61,23 @@ final class DefaultVisitAlgorithmsSelector<V, E, G extends Graph<V, E>>
     /**
      * {@inheritDoc}
      */
-    public Graph<V, E> applyingBreadthFirstSearch()
+    public Graph<N> applyingBreadthFirstSearch()
     {
-        return applyingBreadthFirstSearch( new VisitGraphBuilder<V, E, G>() );
+        return applyingBreadthFirstSearch( new VisitGraphBuilder<N, G>() );
     }
 
     /**
      * {@inheritDoc}
      */
-    public Graph<V, E> applyingDepthFirstSearch()
+    public Graph<N> applyingDepthFirstSearch()
     {
-        return applyingDepthFirstSearch( new VisitGraphBuilder<V, E, G>() );
+        return applyingDepthFirstSearch( new VisitGraphBuilder<N, G>() );
     }
 
     /**
      * {@inheritDoc}
      */
-    public <O> O applyingBreadthFirstSearch( GraphVisitHandler<V, E, G, O> handler )
+    public <O> O applyingBreadthFirstSearch( GraphVisitHandler<N, G, O> handler )
     {
         return applyingSearch( handler, true );
     }
@@ -85,7 +85,7 @@ final class DefaultVisitAlgorithmsSelector<V, E, G extends Graph<V, E>>
     /**
      * {@inheritDoc}
      */
-    public <O> O applyingDepthFirstSearch( GraphVisitHandler<V, E, G, O> handler )
+    public <O> O applyingDepthFirstSearch( GraphVisitHandler<N, G, O> handler )
     {
         return applyingSearch( handler, false );
     }
@@ -98,46 +98,46 @@ final class DefaultVisitAlgorithmsSelector<V, E, G extends Graph<V, E>>
      * <li>Stack (LIFO): depth-first</li>
      * </ul>
      *
+     * @param <O> the output handling type
      * @param handler the handler intercepts visits
      * @param enqueue defines the collection behavior used to traverse the graph: true is a Queue, false is a Stack
      * @return the result of {@link GraphVisitHandler#onCompleted()}
      */
-    private <O> O applyingSearch( GraphVisitHandler<V, E, G, O> handler, boolean enqueue )
+    private <O> O applyingSearch( GraphVisitHandler<N, G, O> handler, boolean enqueue )
     {
         handler = checkNotNull( handler, "Graph visitor handler can not be null." );
 
         handler.discoverGraph( graph );
 
-        final LinkedList<VertexPair<V>> vertexList = new LinkedList<VertexPair<V>>();
+        final LinkedList<EndpointPair<N>> nodesList = new LinkedList<EndpointPair<N>>();
 
-        vertexList.addLast( new VertexPair<V>( source, source ) );
+        nodesList.addLast( ordered( source, source ) );
 
-        final Set<V> visitedVertices = new HashSet<V>();
-        visitedVertices.add( source );
+        final Set<N> visitedNodes = new HashSet<N>();
+        visitedNodes.add( source );
 
         boolean visitingGraph = true;
 
-        while ( visitingGraph && !vertexList.isEmpty() )
+        while ( visitingGraph && !nodesList.isEmpty() )
         {
             // if dequeue, remove the first element, otherwise the last
-            final VertexPair<V> pair = enqueue ? vertexList.removeFirst() : vertexList.removeLast();
-            final V v = pair.getHead();
-            final V prevHead = pair.getTail();
-            final E e = prevHead.equals( v ) ? null : graph.getEdge( prevHead, v );
+            final EndpointPair<N> pair = enqueue ? nodesList.removeFirst() : nodesList.removeLast();
+            final N v = pair.source();
+            final N prevHead = pair.target();
 
             boolean skipVertex = false;
 
-            if ( e != null )
+            if ( graph.hasEdgeConnecting( prevHead, v ) )
             {
                 // if the vertex was already visited, do not discover
                 // another edge leading to the same vertex
-                if ( visitedVertices.contains( v ) )
+                if ( visitedNodes.contains( v ) )
                 {
                     skipVertex = true;
                 }
                 else
                 {
-                    VisitState stateAfterEdgeDiscovery = handler.discoverEdge( prevHead, e, v );
+                    VisitState stateAfterEdgeDiscovery = handler.discoverEdge( prevHead, v );
                     if ( CONTINUE != stateAfterEdgeDiscovery )
                     {
                         skipVertex = true;
@@ -145,12 +145,6 @@ final class DefaultVisitAlgorithmsSelector<V, E, G extends Graph<V, E>>
                         {
                             visitingGraph = false;
                         }
-                    }
-
-                    if ( ABORT == handler.finishEdge( prevHead, e, v ) )
-                    {
-                        skipVertex = true;
-                        visitingGraph = false;
                     }
                 }
             }
@@ -160,8 +154,8 @@ final class DefaultVisitAlgorithmsSelector<V, E, G extends Graph<V, E>>
             boolean vertexWasDiscovered = false;
             if ( !skipVertex )
             {
-                visitedVertices.add( v );
-                VisitState stateAfterVertexDiscovery = handler.discoverVertex( v );
+                visitedNodes.add( v );
+                VisitState stateAfterVertexDiscovery = handler.discoverNode( v );
                 vertexWasDiscovered = true;
                 if ( CONTINUE != stateAfterVertexDiscovery )
                 {
@@ -175,16 +169,16 @@ final class DefaultVisitAlgorithmsSelector<V, E, G extends Graph<V, E>>
 
             if ( !skipVertex )
             {
-                Iterator<V> connected =
-                    ( graph instanceof DirectedGraph ) ? ( (DirectedGraph<V, E>) graph ).getOutbound( v ).iterator()
-                                    : graph.getConnectedVertices( v ).iterator();
+                Iterator<N> connected = (graph.isDirected()
+                                        ? graph.successors( v )
+                                        : graph.adjacentNodes( v ) ).iterator();
 
                 while ( connected.hasNext() )
                 {
-                    V w = connected.next();
-                    if ( !visitedVertices.contains( w ) )
+                    N w = connected.next();
+                    if ( !visitedNodes.contains( w ) )
                     {
-                        vertexList.addLast( new VertexPair<V>( w, v ) );
+                        nodesList.addLast( ordered( w, v ) );
                     }
                 }
             }

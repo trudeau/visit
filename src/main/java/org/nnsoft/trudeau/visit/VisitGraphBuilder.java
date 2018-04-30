@@ -1,7 +1,7 @@
 package org.nnsoft.trudeau.visit;
 
 /*
- *   Copyright 2013 The Trudeau Project
+ *   Copyright 2013 - 2018 The Trudeau Project
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,23 +16,21 @@ package org.nnsoft.trudeau.visit;
  *   limitations under the License.
  */
 
-import org.nnsoft.trudeau.api.DirectedGraph;
-import org.nnsoft.trudeau.api.Graph;
-import org.nnsoft.trudeau.inmemory.BaseMutableGraph;
-import org.nnsoft.trudeau.inmemory.DirectedMutableGraph;
-import org.nnsoft.trudeau.inmemory.UndirectedMutableGraph;
+import com.google.common.graph.MutableGraph;
+import com.google.common.graph.Graph;
+import com.google.common.graph.GraphBuilder;
 
 /**
  * Internal Visitor helper that produces the search tree.
  *
- * @param <V> the Graph vertices type.
+ * @param <N> the Graph vertices type.
  * @param <E> the Graph edges type.
  */
-final class VisitGraphBuilder<V, E, G extends Graph<V, E>>
-    extends BaseGraphVisitHandler<V, E, G, Graph<V, E>>
+final class VisitGraphBuilder<N, G extends Graph<N>>
+    extends BaseGraphVisitHandler<N, G, Graph<N>>
 {
 
-    private BaseMutableGraph<V, E> visitGraph;
+    private MutableGraph<N> visitGraph;
 
     /**
      * {@inheritDoc}
@@ -40,18 +38,18 @@ final class VisitGraphBuilder<V, E, G extends Graph<V, E>>
     @Override
     public void discoverGraph( G graph )
     {
-        if ( graph instanceof DirectedGraph )
+        if ( graph.isDirected() )
         {
-            visitGraph = new DirectedMutableGraph<V, E>();
+            visitGraph = GraphBuilder.directed().build();
         }
         else
         {
-            visitGraph = new UndirectedMutableGraph<V, E>();
+            visitGraph = GraphBuilder.undirected().build();
         }
 
-        for ( V vertex : graph.getVertices() )
+        for ( N node : graph.nodes() )
         {
-            visitGraph.addVertex( vertex );
+            visitGraph.addNode( node );
         }
     }
 
@@ -59,9 +57,9 @@ final class VisitGraphBuilder<V, E, G extends Graph<V, E>>
      * {@inheritDoc}
      */
     @Override
-    public VisitState discoverEdge( V head, E edge, V tail )
+    public VisitState discoverEdge( N head, N tail )
     {
-        visitGraph.addEdge( head, edge, tail );
+        visitGraph.putEdge( head, tail );
         return VisitState.CONTINUE;
     }
 
@@ -69,7 +67,7 @@ final class VisitGraphBuilder<V, E, G extends Graph<V, E>>
      * {@inheritDoc}
      */
     @Override
-    public Graph<V, E> onCompleted()
+    public Graph<N> onCompleted()
     {
         return visitGraph;
     }

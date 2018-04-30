@@ -1,7 +1,7 @@
 package org.nnsoft.trudeau.visit;
 
 /*
- *   Copyright 2013 The Trudeau Project
+ *   Copyright 2013 - 2018 The Trudeau Project
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@ package org.nnsoft.trudeau.visit;
  *   limitations under the License.
  */
 
-import org.nnsoft.trudeau.api.Graph;
+import com.google.common.graph.Graph;
 
 /**
  * A {@link GraphVisitHandler} controls the execution of breadth-first and depth-first search
  * algorithms in {@link Visit}.
  */
-public interface GraphVisitHandler<V, E, G extends Graph<V, E>, O>
+public interface GraphVisitHandler<N, G extends Graph<N>, O>
 {
 
     /**
@@ -40,7 +40,7 @@ public interface GraphVisitHandler<V, E, G extends Graph<V, E>, O>
      * </ul>
      * @return the state of the visit after operations on the vertex
      */
-    VisitState discoverVertex( V vertex );
+    VisitState discoverNode( N node );
 
     /**
      * Performs operations on the input edge and determines the behavior of the visit algorithm
@@ -52,21 +52,14 @@ public interface GraphVisitHandler<V, E, G extends Graph<V, E>, O>
      * </ul>
      * @return the state of the visit after operations on the edge
      */
-    VisitState discoverEdge( V head, E edge, V tail );
-
-    /**
-     * Checks if the search algorithm should be terminated. Called after the search algorithm has finished
-     * visiting the input edge.
-     * @return {@link VisitState.ABORT} if the search algorithm should be terminated after visiting the input edge, {@link VisitState.CONTINUE} otherwise
-     */
-    VisitState finishEdge( V head, E edge, V tail );
+    VisitState discoverEdge( N head, N tail );
 
     /**
      * Checks if the search algorithm should be terminated. Called after the search algorithm has finished
      * visiting the input vertex.
      * @return {@link VisitState.ABORT} if the search algorithm should be terminated after visiting the input vertex, {@link VisitState.CONTINUE} otherwise
      */
-    VisitState finishVertex( V vertex );
+    VisitState finishVertex( N node );
 
     /**
      * Called upon termination of the search algorithm.
