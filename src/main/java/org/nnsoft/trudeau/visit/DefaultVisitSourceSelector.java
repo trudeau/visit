@@ -23,12 +23,12 @@ import com.google.common.graph.Graph;
 /**
  * {@link VisitSourceSelector} implementation.
  *
- * @param <V> the Graph vertices type
+ * @param <N> the Graph nodes type
  * @param <E> the Graph edges type
  * @param <G> the Graph type
  */
-final class DefaultVisitSourceSelector<V, G extends Graph<V>>
-    implements VisitSourceSelector<V, G>
+final class DefaultVisitSourceSelector<N, G extends Graph<N>>
+    implements VisitSourceSelector<N, G>
 {
 
     private final G graph;
@@ -41,14 +41,14 @@ final class DefaultVisitSourceSelector<V, G extends Graph<V>>
     /**
      * {@inheritDoc}
      */
-    public <S extends V> VisitAlgorithmsSelector<V, G> from( S source )
+    public <S extends N> VisitAlgorithmsSelector<N, G> from( S source )
     {
         source = requireNonNull( source, "Impossible to visit input graph with null source" );
         if ( !graph.nodes().contains( source ) )
         {
             throw new IllegalArgumentException( "Input node does not exist in the Graph" );
         }
-        return new DefaultVisitAlgorithmsSelector<V, G>( graph, source );
+        return new DefaultVisitAlgorithmsSelector<N, G>( graph, source );
     }
 
 }
