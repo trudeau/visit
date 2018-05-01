@@ -16,7 +16,7 @@ package org.nnsoft.trudeau.visit;
  *   limitations under the License.
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 import static com.google.common.graph.EndpointPair.ordered;
 import static org.nnsoft.trudeau.visit.VisitState.ABORT;
 import static org.nnsoft.trudeau.visit.VisitState.CONTINUE;
@@ -105,7 +105,7 @@ final class DefaultVisitAlgorithmsSelector<N, G extends Graph<N>>
      */
     private <O> O applyingSearch( GraphVisitHandler<N, G, O> handler, boolean enqueue )
     {
-        handler = checkNotNull( handler, "Graph visitor handler can not be null." );
+        handler = requireNonNull( handler, "Graph visitor handler can not be null." );
 
         handler.discoverGraph( graph );
 

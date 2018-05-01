@@ -16,8 +16,7 @@ package org.nnsoft.trudeau.visit;
  *   limitations under the License.
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.requireNonNull;
 
 import com.google.common.graph.Graph;
 
@@ -44,8 +43,11 @@ final class DefaultVisitSourceSelector<V, G extends Graph<V>>
      */
     public <S extends V> VisitAlgorithmsSelector<V, G> from( S source )
     {
-        source = checkNotNull( source, "Impossible to visit input graph %s with null source", graph );
-        checkState( graph.nodes().contains( source ), "Vertex %s does not exist in the Graph", source );
+        source = requireNonNull( source, "Impossible to visit input graph with null source" );
+        if ( !graph.nodes().contains( source ) )
+        {
+            throw new IllegalArgumentException( "Input node does not exist in the Graph" );
+        }
         return new DefaultVisitAlgorithmsSelector<V, G>( graph, source );
     }
 

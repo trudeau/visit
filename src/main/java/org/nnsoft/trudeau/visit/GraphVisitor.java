@@ -16,7 +16,7 @@ package org.nnsoft.trudeau.visit;
  *   limitations under the License.
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import com.google.common.graph.Graph;
 
@@ -34,7 +34,7 @@ public final class GraphVisitor
      */
     public static <N, G extends Graph<N>> VisitSourceSelector<N, G> visit( G graph )
     {
-        graph = checkNotNull( graph, "No algorithm can be applied on null graph!" );
+        graph = requireNonNull( graph, "No algorithm can be applied on null graph!" );
         return new DefaultVisitSourceSelector<N, G>( graph );
     }
 
