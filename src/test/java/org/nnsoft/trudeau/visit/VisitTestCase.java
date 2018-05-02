@@ -17,15 +17,15 @@ package org.nnsoft.trudeau.visit;
  */
 
 import static org.junit.Assert.assertEquals;
-import static org.nnsoft.trudeau.connector.GraphConnector.populate;
+import static org.nnsoft.trudeau.connector.GraphConnector.on;
 import static org.nnsoft.trudeau.visit.GraphVisitor.visit;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.nnsoft.trudeau.connector.AbstractMutableGraphConnection;
-import org.nnsoft.trudeau.connector.AbstractMutableValueGraphConnection;
+import org.nnsoft.trudeau.connector.AbstractGraphDescription;
+import org.nnsoft.trudeau.connector.AbstractValueGraphDescription;
 
 import com.google.common.graph.Graph;
 import com.google.common.graph.GraphBuilder;
@@ -36,7 +36,7 @@ import com.google.common.graph.ValueGraphBuilder;
 public final class VisitTestCase
 {
 
-    @Test( expected = IllegalStateException.class )
+    @Test( expected = IllegalArgumentException.class )
     public void testNotExistVertex()
     {
         Graph<String> input = GraphBuilder.undirected().build();
@@ -55,11 +55,11 @@ public final class VisitTestCase
 
         MutableGraph<String> input = GraphBuilder.undirected().build();
 
-        populate( input ).withConnections( new AbstractMutableGraphConnection<String>()
+        on( input ).createConnections( new AbstractGraphDescription<String>()
         {
 
             @Override
-            public void connect()
+            public void describe()
             {
                 String r = addNode( "r" );
                 String s = addNode( "s" );
@@ -91,11 +91,11 @@ public final class VisitTestCase
 
         MutableGraph<String> expected = GraphBuilder.undirected().build();
 
-        populate( expected ).withConnections( new AbstractMutableGraphConnection<String>()
+        on( expected ).createConnections( new AbstractGraphDescription<String>()
         {
 
             @Override
-            public void connect()
+            public void describe()
             {
                 String r = addNode( "r" );
                 String s = addNode( "s" );
@@ -143,11 +143,11 @@ public final class VisitTestCase
         // input graph
 
         MutableValueGraph<String, String> input = ValueGraphBuilder.undirected().build();
-        populate( input ).withConnections( new AbstractMutableValueGraphConnection<String, String>()
+        on( input ).createConnections( new AbstractValueGraphDescription<String, String>()
         {
 
             @Override
-            public void connect()
+            public void describe()
             {
                 String a = addNode( "A" );
                 String b = addNode( "B" );
@@ -159,17 +159,17 @@ public final class VisitTestCase
                 String h = addNode( "H" );
                 String s = addNode( "S" );
 
-                putEdgeValue( "S <-> A" ).from( s ).to( a );
-                putEdgeValue( "S <-> B" ).from( s ).to( b );
+                connect( s ).to( a ).via( "S <-> A" );
+                connect( s ).to( b ).via( "S <-> B" );
 
-                putEdgeValue( "A <-> C" ).from( a ).to( c );
-                putEdgeValue( "A <-> D" ).from( a ).to( d );
+                connect( a ).to( c ).via( "A <-> C" );
+                connect( a ).to( d ).via( "A <-> D" );
 
-                putEdgeValue( "B <-> E" ).from( b ).to( e );
-                putEdgeValue( "B <-> F" ).from( b ).to( f );
+                connect( b ).to( e ).via( "B <-> E" );
+                connect( b ).to( f ).via( "B <-> F" );
 
-                putEdgeValue( "E <-> H" ).from( e ).to( h );
-                putEdgeValue( "E <-> G" ).from( e ).to( g );
+                connect( e ).to( h ).via( "E <-> H" );
+                connect( e ).to( g ).via( "E <-> G" );
 
                 // populate the expected list, order is not the same in the pic, due to Stack use
                 expected.add( s );
